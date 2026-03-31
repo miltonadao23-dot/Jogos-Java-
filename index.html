@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Nostalgia Hub: Bounce & Watchmen</title>
-    <!-- Motor Java v2.1 (mais estável para J2ME) -->
+    <!-- CORREÇÃO 1: Link oficial do motor Java (CheerpJ 3.0) -->
     <script src="https://leaningtech.com"></script>
     <style>
         body { background: #000; color: #f39c12; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding: 20px; }
         .game-selector { margin: 20px; }
-        .btn { background: #f39c12; border: none; padding: 15px 25px; cursor: pointer; font-weight: bold; margin: 10px; border-radius: 5px; text-transform: uppercase; }
-        .btn:hover { background: #e67e22; }
-        #display { width: 320px; height: 480px; background: #222; margin: 20px auto; border: 5px solid #333; border-radius: 10px; position: relative; overflow: hidden; }
+        .btn { background: #f39c12; border: none; padding: 15px 25px; cursor: pointer; font-weight: bold; margin: 10px; border-radius: 5px; text-transform: uppercase; transition: 0.3s; }
+        .btn:hover { background: #e67e22; transform: scale(1.05); }
+        #display { width: 320px; height: 480px; background: #222; margin: 20px auto; border: 5px solid #333; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .controls-info { color: #888; font-size: 0.9em; margin-top: 10px; }
     </style>
 </head>
@@ -19,13 +19,13 @@
     <h1>JOGOS JAVA ONLINE</h1>
     
     <div class="game-selector">
-        <!-- Nomes corrigidos conforme os teus ficheiros -->
+        <!-- IMPORTANTE: O nome aqui deve ser IGUAL ao nome do ficheiro (ex: Bounce.jar ou bounce.jar) -->
         <button class="btn" onclick="playGame('Bounce.jar')">JOGAR BOUNCE</button>
         <button class="btn" onclick="playGame('watchmen.jar')">JOGAR WATCHMEN</button>
     </div>
 
     <div id="display">
-        <p id="status-msg" style="padding-top: 200px;">Clica num botão para carregar o jogo</p>
+        <p id="status-msg">Clica num botão para carregar o jogo</p>
     </div>
 
     <div class="controls-info">
@@ -33,31 +33,32 @@
     </div>
 
     <script>
-        async function playGame(jarFile) {
-            const display = document.getElementById('display');
-            const msg = document.getElementById('status-msg');
+    async function playGame(jarFile) {
+        const display = document.getElementById('display');
+        display.innerHTML = "<p style='padding-top:200px;'>A carregar " + jarFile + "...</p>";
+        
+        try {
+            // Inicializa o motor Java v3.0
+            await cheerpjInit();
             
-            msg.innerHTML = "A carregar " + jarFile + "...<br>(Isto pode demorar alguns segundos)";
+            // Cria o ecrã e adiciona ao display
+            const graphicalDisplay = cheerpjCreateDisplay(320, 480);
+            display.innerHTML = ""; 
+            display.appendChild(graphicalDisplay);
             
-            try {
-                // Inicializa o ambiente Java
-                await cheerpjInit();
-                
-                // Limpa o ecrã para o jogo entrar
-                display.innerHTML = "";
-                
-                // Cria o ecrã do jogo no elemento 'display'
-                cheerpjCreateDisplay(320, 480, display);
-                
-                // EXECUTAR: Nota que usamos o caminho relativo direto
-                await cheerpjRunJar("/app/" + jarFile);
-                
-            } catch (e) {
-                console.error(e);
-                display.innerHTML = "<p style='color:red; padding-top:150px;'>ERRO:<br>Ficheiro " + jarFile + " não encontrado.<br>Certifica-te que está na mesma pasta do site.</p>";
-            }
+            // CORREÇÃO PARA GITHUB: 
+            // Usamos window.location.pathname para garantir que ele procura na pasta do repositório
+            const jarPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + "/" + jarFile;
+            
+            await cheerpjRunJar(jarPath);
+            
+        } catch (e) {
+            console.error("Erro ao carregar:", e);
+            display.innerHTML = "<div style='color:red; padding-top:150px;'>ERRO:<br>Não foi possível carregar " + jarFile + ".<br><small>Verifica se o ficheiro está no GitHub com este nome exato.</small></div>";
         }
-    </script>
+    }
+</script>
+
 
 </body>
 </html>
