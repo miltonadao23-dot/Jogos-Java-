@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Nostalgia Hub: Bounce & Watchmen</title>
+    <!-- Motor Java v2.1 (mais estável para J2ME) -->
+    <script src="https://leaningtech.com"></script>
+    <style>
+        body { background: #000; color: #f39c12; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding: 20px; }
+        .game-selector { margin: 20px; }
+        .btn { background: #f39c12; border: none; padding: 15px 25px; cursor: pointer; font-weight: bold; margin: 10px; border-radius: 5px; text-transform: uppercase; }
+        .btn:hover { background: #e67e22; }
+        #display { width: 320px; height: 480px; background: #222; margin: 20px auto; border: 5px solid #333; border-radius: 10px; position: relative; overflow: hidden; }
+        .controls-info { color: #888; font-size: 0.9em; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>JOGOS JAVA ONLINE</h1>
+    
+    <div class="game-selector">
+        <!-- Nomes corrigidos conforme os teus ficheiros -->
+        <button class="btn" onclick="playGame('Bounce.jar')">JOGAR BOUNCE</button>
+        <button class="btn" onclick="playGame('watchmen.jar')">JOGAR WATCHMEN</button>
+    </div>
+
+    <div id="display">
+        <p id="status-msg" style="padding-top: 200px;">Clica num botão para carregar o jogo</p>
+    </div>
+
+    <div class="controls-info">
+        <p>Utiliza as <b>setas do teclado</b> e o <b>Enter</b> para jogar.</p>
+    </div>
+
+    <script>
+        async function playGame(jarFile) {
+            const display = document.getElementById('display');
+            const msg = document.getElementById('status-msg');
+            
+            msg.innerHTML = "A carregar " + jarFile + "...<br>(Isto pode demorar alguns segundos)";
+            
+            try {
+                // Inicializa o ambiente Java
+                await cheerpjInit();
+                
+                // Limpa o ecrã para o jogo entrar
+                display.innerHTML = "";
+                
+                // Cria o ecrã do jogo no elemento 'display'
+                cheerpjCreateDisplay(320, 480, display);
+                
+                // EXECUTAR: Nota que usamos o caminho relativo direto
+                await cheerpjRunJar("/app/" + jarFile);
+                
+            } catch (e) {
+                console.error(e);
+                display.innerHTML = "<p style='color:red; padding-top:150px;'>ERRO:<br>Ficheiro " + jarFile + " não encontrado.<br>Certifica-te que está na mesma pasta do site.</p>";
+            }
+        }
+    </script>
+
+</body>
+</html>
